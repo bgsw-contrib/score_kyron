@@ -10,29 +10,17 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-
-name: QNX8 Build
+name: Bzlmod Lockfile Check
 on:
-  pull_request_target:
+  pull_request:
     types: [opened, reopened, synchronize]
   merge_group:
     types: [checks_requested]
+  push:
+    branches:
+      - main
 jobs:
-  qnx-build:
-    uses: eclipse-score/cicd-workflows/.github/workflows/qnx-build.yml@main
-    permissions:
-      contents: read
-      pull-requests: read
-    strategy:
-      matrix:
-        config: ['arm64-qnx', 'x86_64-qnx']
+  bzlmod-lock:
+    uses: eclipse-score/cicd-workflows/.github/workflows/bzlmod-lock-check.yml@main
     with:
-      bazel-target: '//src/...'
-      bazel-config: ${{ matrix.config }}
-      extra-bazel-flags: '--lockfile_mode=error'
-      credential-helper: 'scripts/internal/qnx_creds.py'
-      environment-name: 'workflow-approval'
-    secrets:
-      score-qnx-license: ${{ secrets.SCORE_QNX_LICENSE }}
-      score-qnx-user: ${{ secrets.SCORE_QNX_USER }}
-      score-qnx-password: ${{ secrets.SCORE_QNX_PASSWORD }}
+      working-directory: .
